@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client/extension";
+import { PrismaClient } from "@prisma/client";
 import express from "express"
 const prisma = new PrismaClient();
 const router = express.Router();
@@ -18,17 +18,37 @@ app.post('/addgenre',async (req,res)=>{
             name: req.body.name,
         },
     })
+    res.send('genre added')
 })
 
-app.get('/findGenre',async (req,res)=>{
-    const genre = await prisma.genre.findMany(
+app.get('/findGenrebyId/:id',async (req,res)=>{
+    const genre = await prisma.genre.findUnique(
         {where :
-           { name: req.body.name}
+           { id: req.body.id}
         }
     )
     res.send(genre)
 })
 
+app.put('/updateGenrebyId',async (req,res)=>{
+    await prisma.genre.update({
+        where: {
+            id: req.body.id
+        },
+        data: {
+            name: req.body.name,
+        },
+    })
+})
+
+app.delete('/deleteGenrebyId',async (req,res)=>{
+    await prisma.genre.delete({
+        where: {
+            id: req.body.id
+        },
+    })
+    res.send('genre deleted')
+})
 
 app.listen(port, () => {
         console.log(`server is running on ${port}`)})
